@@ -1,9 +1,8 @@
-import json
+from mcp.price_mcp import get_prices
 
 class PriceOptimizerAgent:
     def optimize(self, shopping_items):
-        with open("data/prices.json", "r") as f:
-            prices = json.load(f)
+        prices = get_prices()
 
         cart = []
         total = 0

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from agents.master_agent import MasterAgent
 from agents.context_agent import ContextAgent
 from agents.menu_agent import MenuPlannerAgent
 from agents.inventory_agent import InventoryFilterAgent
@@ -36,17 +37,5 @@ def home():
 
 @app.post("/generate-shopping-list")
 def generate(data: UserInput):
-    context = context_agent.analyze(data.model_dump())
-
-    menu = menu_agent.plan(context)
-
-    filtered = inventory_agent.filter(menu["ingredients"])
-
-    result = price_agent.optimize(filtered)
-
-    return {
-        "context": context,
-        "meal_plan": menu["meal_plan"],
-        "shopping_list": result["cart"],
-        "total_cost": result["total"]
-    }
+    result = master_agent.run(data.model_dump())
+    return result

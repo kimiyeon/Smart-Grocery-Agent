@@ -1,10 +1,8 @@
-import json
+from mcp.recipe_mcp import get_recipes
 
 class MenuPlannerAgent:
     def plan(self, context):
-        with open("data/recipes.json", "r") as f:
-            recipes = json.load(f)
-
+        recipes = get_recipes()
         purpose = context["purpose"]
 
         if purpose == "diet":

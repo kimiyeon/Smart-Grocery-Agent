@@ -1,0 +1,6 @@
+{
+  "project_name": "smart-grocery-agent",
+  "skills_directory": "./skills",
+  "extensions_enabled": true,
+  "mcp_enabled": true
+}

@@ -1,22 +1,32 @@
 {
   "weekly": [
-    {
-      "menu": "Chicken Salad",
-      "ingredients": ["chicken", "lettuce", "tomato"]
-    },
-    {
-      "menu": "Pasta",
-      "ingredients": ["pasta", "tomato_sauce", "cheese"]
-    },
-    {
-      "menu": "Soup",
-      "ingredients": ["onion", "potato", "carrot"]
-    }
+    {"menu": "Bulgogi Rice Bowl", "ingredients": ["beef", "rice", "onion"]},
+    {"menu": "Kimchi Fried Rice", "ingredients": ["rice", "kimchi", "egg"]},
+    {"menu": "Doenjang Jjigae", "ingredients": ["tofu", "zucchini", "onion"]}
   ],
   "diet": [
-    {
-      "menu": "Grilled Chicken",
-      "ingredients": ["chicken", "broccoli"]
-    }
+    {"menu": "Chicken Breast Wrap", "ingredients": ["chicken_breast", "tortilla", "lettuce"]},
+    {"menu": "Grilled Chicken", "ingredients": ["chicken", "broccoli"]},
+    {"menu": "Salmon Salad", "ingredients": ["salmon", "lettuce", "tomato"]}
+  ],
+  "birthday": [
+    {"menu": "Mini Sandwich Platter", "ingredients": ["bread", "ham", "cheese", "lettuce"]},
+    {"menu": "Fruit Platter", "ingredients": ["apple", "banana", "grape"]},
+    {"menu": "Tteokbokki", "ingredients": ["rice_cake", "gochujang", "fish_cake"]}
+  ],
+  "camping": [
+    {"menu": "BBQ Pork Belly", "ingredients": ["pork_belly", "lettuce", "garlic"]},
+    {"menu": "Sausage Skewers", "ingredients": ["sausage", "bell_pepper", "onion"]},
+    {"menu": "Ramyeon", "ingredients": ["ramyeon", "egg", "green_onion"]}
+  ],
+  "bbq": [
+    {"menu": "Pork Belly BBQ", "ingredients": ["pork_belly", "garlic", "lettuce", "ssamjang"]},
+    {"menu": "Grilled Sausage", "ingredients": ["sausage", "bell_pepper", "onion"]},
+    {"menu": "Corn Cheese", "ingredients": ["corn", "cheese", "mayo"]}
+  ],
+  "party": [
+    {"menu": "Chicken Platter", "ingredients": ["chicken", "oil", "flour"]},
+    {"menu": "Pasta Salad", "ingredients": ["pasta", "tomato", "lettuce", "cheese"]},
+    {"menu": "Fruit Punch", "ingredients": ["orange", "grape", "soda"]}
   ]
 }

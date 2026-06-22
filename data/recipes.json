@@ -1,32 +1,34 @@
 {
   "weekly": [
-    {"menu": "Bulgogi Rice Bowl", "ingredients": ["beef", "rice", "onion"]},
-    {"menu": "Kimchi Fried Rice", "ingredients": ["rice", "kimchi", "egg"]},
-    {"menu": "Doenjang Jjigae", "ingredients": ["tofu", "zucchini", "onion"]}
+    {
+      "menu": "Kimchi Fried Rice",
+      "ingredients": ["rice", "kimchi", "egg", "green_onion"]
+    },
+    {
+      "menu": "Chicken Pasta",
+      "ingredients": ["chicken", "pasta", "tomato", "onion"]
+    }
   ],
   "diet": [
-    {"menu": "Chicken Breast Wrap", "ingredients": ["chicken_breast", "tortilla", "lettuce"]},
-    {"menu": "Grilled Chicken", "ingredients": ["chicken", "broccoli"]},
-    {"menu": "Salmon Salad", "ingredients": ["salmon", "lettuce", "tomato"]}
+    {
+      "menu": "Chicken Breast Salad",
+      "ingredients": ["chicken_breast", "lettuce", "tomato", "egg"]
+    }
   ],
   "birthday": [
-    {"menu": "Mini Sandwich Platter", "ingredients": ["bread", "ham", "cheese", "lettuce"]},
-    {"menu": "Fruit Platter", "ingredients": ["apple", "banana", "grape"]},
-    {"menu": "Tteokbokki", "ingredients": ["rice_cake", "gochujang", "fish_cake"]}
+    {
+      "menu": "Mini Sandwich",
+      "ingredients": ["bread", "ham", "lettuce", "cheese"]
+    },
+    {
+      "menu": "Fruit Platter",
+      "ingredients": ["apple", "banana", "grape"]
+    }
   ],
   "camping": [
-    {"menu": "BBQ Pork Belly", "ingredients": ["pork_belly", "lettuce", "garlic"]},
-    {"menu": "Sausage Skewers", "ingredients": ["sausage", "bell_pepper", "onion"]},
-    {"menu": "Ramyeon", "ingredients": ["ramyeon", "egg", "green_onion"]}
-  ],
-  "bbq": [
-    {"menu": "Pork Belly BBQ", "ingredients": ["pork_belly", "garlic", "lettuce", "ssamjang"]},
-    {"menu": "Grilled Sausage", "ingredients": ["sausage", "bell_pepper", "onion"]},
-    {"menu": "Corn Cheese", "ingredients": ["corn", "cheese", "mayo"]}
-  ],
-  "party": [
-    {"menu": "Chicken Platter", "ingredients": ["chicken", "oil", "flour"]},
-    {"menu": "Pasta Salad", "ingredients": ["pasta", "tomato", "lettuce", "cheese"]},
-    {"menu": "Fruit Punch", "ingredients": ["orange", "grape", "soda"]}
+    {
+      "menu": "Pork Belly BBQ",
+      "ingredients": ["pork_belly", "garlic", "lettuce", "ssamjang"]
+    }
   ]
 }

@@ -1,4 +1,5 @@
 from mcp.recipe_mcp import get_recipes
+from mcp.menu_filter_mcp import classify_menu
 import random
 
 
@@ -47,6 +48,35 @@ PURPOSE_KEYWORDS = {
 }
 
 
+IGNORE_INGREDIENTS = {
+    "water",
+    "salt",
+    "pepper",
+    "black_pepper",
+    "white_pepper",
+    "parsley",
+    "bay_leaf",
+    "bay_leaves",
+    "oregano",
+    "thyme",
+    "rosemary",
+}
+
+
+EXOTIC_INGREDIENTS = {
+    "naan_bread",
+    "morcilla",
+    "chorizo",
+    "pico_de_gallo_sauce",
+    "rocket",
+    "fried_ripe_bananas",
+    "corn_arepa_filled_with_mozarella_cheese",
+    "corn_arepa_filled_with_mozzarella_cheese",
+    "plantain",
+    "plantains",
+}
+
+
 class MenuPlannerAgent:
     def plan(self, context):
         purpose = context.get("purpose", "weekly")
@@ -63,25 +93,58 @@ class MenuPlannerAgent:
             menu_name = meal.get("menu", "")
             ingredients = meal.get("ingredients", [])
 
-            if not self.is_popular_meal(menu_name, ingredients, purpose):
+            classification = classify_menu(menu_name, ingredients, purpose)
+
+            if not classification.get("accepted", False):
                 continue
 
-            normalized_ingredients = set(
-                item.lower().replace(" ", "_")
+            normalized_ingredients = {
+                self.normalize_item(item)
                 for item in ingredients
-            )
+            }
 
             if normalized_ingredients & blocked:
                 continue
 
-            score = self.score_meal(menu_name, ingredients, purpose)
+            score = classification.get("score", 0) + self.score_meal(
+                menu_name,
+                ingredients,
+                purpose
+            )
 
             safe_recipes.append({
                 "menu": menu_name,
                 "ingredients": ingredients,
                 "score": score,
-                "is_dessert": self.is_dessert_meal(menu_name, ingredients),
+                "is_dessert": classification.get("is_dessert", False),
             })
+
+        # 필터가 너무 강해서 아무 메뉴도 없을 경우:
+        # menu-filter-mcp 조건은 무시하고 알레르기만 피해서 fallback 추천
+        if not safe_recipes:
+            fallback_recipes = []
+
+            for meal in recipes:
+                menu_name = meal.get("menu", "")
+                ingredients = meal.get("ingredients", [])
+
+                normalized_ingredients = {
+                    self.normalize_item(item)
+                    for item in ingredients
+                }
+
+                if normalized_ingredients & blocked:
+                    continue
+
+                fallback_recipes.append({
+                    "menu": menu_name,
+                    "ingredients": ingredients,
+                    "score": self.score_meal(menu_name, ingredients, purpose),
+                    "is_dessert": False,
+                })
+
+            fallback_recipes.sort(key=lambda x: x["score"], reverse=True)
+            safe_recipes = fallback_recipes[:max(meal_limit * 2, meal_limit)]
 
         if not safe_recipes:
             return {
@@ -132,7 +195,17 @@ class MenuPlannerAgent:
 
         for meal in selected:
             meals.append(meal["menu"])
-            ingredients.extend(meal["ingredients"])
+
+            for ingredient in meal["ingredients"]:
+                normalized = self.normalize_item(ingredient)
+
+                if normalized in IGNORE_INGREDIENTS:
+                    continue
+
+                if normalized in EXOTIC_INGREDIENTS:
+                    continue
+
+                ingredients.append(normalized)
 
         return {
             "meal_plan": meals,
@@ -143,83 +216,13 @@ class MenuPlannerAgent:
             "quantity_multiplier": self.get_quantity_multiplier(family_size),
         }
 
-    def is_popular_meal(self, menu_name, ingredients, purpose):
-        text = (menu_name + " " + " ".join(ingredients)).lower()
-
-        popular_keywords = [
-            "chicken", "beef", "pork", "salmon", "fish",
-            "pasta", "rice", "fried", "soup", "salad",
-            "sandwich", "burger", "pizza", "noodle",
-            "curry", "wrap", "sausage", "potato",
-            "tomato", "egg", "bread", "fruit",
-            "cake", "cookie", "pie", "grilled"
-        ]
-
-        unpopular_keywords = [
-            "ayam", "percik", "laksa", "rendang",
-            "tagine", "koshari", "kedgeree",
-            "massaman", "satay", "sambal",
-            "cevapi", "burek", "moussaka",
-            "shakshuka", "timbits", "goat",
-            "kidney", "liver", "offal"
-        ]
-
-        exotic_ingredients = [
-            "sherry", "cardamom", "cumin",
-            "oregano", "golden_syrup", "dulce",
-            "molasses", "anchovy"
-        ]
-
-        if any(word in text for word in unpopular_keywords):
-            return False
-
-        if any(word in text for word in exotic_ingredients):
-            return False
-
-        if len(ingredients) > 12:
-            return False
-
-        is_dessert = self.is_dessert_meal(menu_name, ingredients)
-
-        if purpose != "birthday" and is_dessert:
-            return False
-
-        if purpose == "birthday" and is_dessert:
-            return True
-
-        if any(word in text for word in popular_keywords):
-            return True
-
-        return False
-
-    def is_dessert_meal(self, menu_name, ingredients):
-        text = (menu_name + " " + " ".join(ingredients)).lower()
-
-        dessert_keywords = [
-            "cake", "cookie", "brownie", "pudding",
-            "pie", "tart", "muffin", "dessert",
-            "chocolate"
-        ]
-
-        baking_keywords = [
-            "flour", "sugar", "butter",
-            "vanilla", "syrup"
-        ]
-
-        dessert_score = 0
-
-        for keyword in dessert_keywords:
-            if keyword in text:
-                dessert_score += 1
-
-        for keyword in baking_keywords:
-            if keyword in text:
-                dessert_score += 1
-
-        return dessert_score >= 3
+    def normalize_item(self, item):
+        return str(item).lower().strip().replace(" ", "_")
 
     def score_meal(self, menu_name, ingredients, purpose):
-        text = (menu_name + " " + " ".join(ingredients)).lower()
+        text = self.normalize_item(
+            menu_name + " " + " ".join(ingredients)
+        )
 
         keywords = PURPOSE_KEYWORDS.get(
             purpose,
@@ -233,14 +236,23 @@ class MenuPlannerAgent:
                 score += 2
 
         if purpose == "diet":
-            heavy_words = ["fried", "cake", "chocolate", "cream", "pork", "butter"]
+            heavy_words = [
+                "fried",
+                "cake",
+                "chocolate",
+                "cream",
+                "pork",
+                "butter"
+            ]
+
             for word in heavy_words:
                 if word in text:
                     score -= 2
 
         if purpose == "birthday":
-            if self.is_dessert_meal(menu_name, ingredients):
+            if "cake" in text or "cookie" in text or "chocolate" in text:
                 score += 2
+
             if "salad" in text or "soup" in text:
                 score -= 1
 
@@ -284,6 +296,9 @@ class MenuPlannerAgent:
 
             for key, items in ALLERGY_MAP.items():
                 if key.lower() in allergy:
-                    blocked.update(x.lower() for x in items)
+                    blocked.update(
+                        self.normalize_item(item)
+                        for item in items
+                    )
 
         return blocked
